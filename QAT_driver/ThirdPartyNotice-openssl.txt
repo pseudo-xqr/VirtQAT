@@ -1,0 +1,15 @@
+QAT SW - Third Party License File
+
+Third party software required notice and/or license terms are included in their own individual license files indicated below.
+
+-------------------------------------------------------------
+
+1.  OPENSSL
+	Version: See opensslv.h
+	License type: OpenSSL License
+	Path to license: ./LICENSE.OPENSSL
+	URL: See ./LICENSE.OPENSSL
+	Copyright: Provided in license
+
+-------------------------------------------------------------
+Other names and brands may be claimed as the property of others.
