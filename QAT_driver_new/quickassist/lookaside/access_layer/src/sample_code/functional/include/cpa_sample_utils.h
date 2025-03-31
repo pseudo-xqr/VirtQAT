@@ -553,6 +553,8 @@ void symSessionWaitForInflightReq(CpaCySymSessionCtx pSessionCtx);
 
 void sampleDcGetInstance(CpaInstanceHandle *pDcInstHandle);
 
+void sampleDcGetMultInstance(CpaInstanceHandle *pDcInstHandle1, CpaInstanceHandle *pDcInstHandle2);
+
 void sampleDcStartPolling(CpaInstanceHandle dcInstHandle);
 
 void sampleDcStopPolling(void);

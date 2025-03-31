@@ -1796,9 +1796,14 @@ CpaStatus cpaDcGetNumInstances(Cpa16U *pNumInstances)
         ICP_ACCEL_CAPABILITIES_COMPRESSION, pAdfInsts, &num_accel_dev);
     if (CPA_STATUS_SUCCESS == status)
     {
+        // LAC_LOG1("num_accel_dev = %u", num_accel_dev);
         for (i = 0; i < num_accel_dev; i++)
         {
             dev_addr = (icp_accel_dev_t *)pAdfInsts[i];
+            // if (dev_addr->isVf) {
+            //     LAC_LOG("dev_addr is VF!");
+            // }
+            // LAC_LOG1("Dev_addr pci id = %u", dev_addr->pciDevId);
             if (NULL != dev_addr)
             {
                 base_addr = dev_addr->pSalHandle;

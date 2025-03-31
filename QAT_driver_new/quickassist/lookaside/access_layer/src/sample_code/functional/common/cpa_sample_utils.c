@@ -224,12 +224,44 @@ void sampleDcGetInstance(CpaInstanceHandle *pDcInstHandle)
     {
         numInstances = MAX_INSTANCES;
     }
-    PRINT("numInstances = %u\n", numInstances);
+    // PRINT("numInstances = %u\n", numInstances);
     if ((status == CPA_STATUS_SUCCESS) && (numInstances > 0))
     {
         status = cpaDcGetInstances(numInstances, dcInstHandles);
         if (status == CPA_STATUS_SUCCESS)
             *pDcInstHandle = dcInstHandles[0];
+    }
+
+    if (0 == numInstances)
+    {
+        PRINT_ERR("No instances found for 'SSL'\n");
+        PRINT_ERR("Please check your section names");
+        PRINT_ERR(" in the config file.\n");
+        PRINT_ERR("Also make sure to use config file version 2.\n");
+    }
+}
+
+void sampleDcGetMultInstance(CpaInstanceHandle *pDcInstHandle1, CpaInstanceHandle *pDcInstHandle2)
+{
+    CpaInstanceHandle dcInstHandles[MAX_INSTANCES];
+    Cpa16U numInstances = 0;
+    CpaStatus status = CPA_STATUS_SUCCESS;
+
+    *pDcInstHandle1 = NULL;
+    *pDcInstHandle2 = NULL;
+    status = cpaDcGetNumInstances(&numInstances);
+    if (numInstances >= MAX_INSTANCES)
+    {
+        numInstances = MAX_INSTANCES;
+    }
+    PRINT("numInstances = %u\n", numInstances);
+    if ((status == CPA_STATUS_SUCCESS) && (numInstances > 0))
+    {
+        status = cpaDcGetInstances(numInstances, dcInstHandles);
+        if (status == CPA_STATUS_SUCCESS) {
+            *pDcInstHandle1 = dcInstHandles[1];
+            *pDcInstHandle2 = dcInstHandles[31];
+        }
     }
 
     if (0 == numInstances)
