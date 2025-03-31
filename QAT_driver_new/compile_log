@@ -1,0 +1,261 @@
+make[1]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code'
+test -d /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/build || mkdir /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/build;
+
+Building perf_user
+
+LD_LIBRARY_PATH: 
+
+ICP_BUILD_OUTPUT: /home/qirongx2/QAT_driver_new/build
+make[2]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance'
+
+Cleaning performance generated files. /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance 
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/build/linux_2.6/user_space/*;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/crypto/.*.o.cmd ;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/compression/.*.o.cmd ;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/framework/.*.o.cmd ;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/framework/linux/kernel_space/.*.o.cmd ;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/common/.*.o.cmd ;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/build/linux_2.6/kernel_space/*;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/qae/linux/kernel_space/.*.o.cmd;
+rm -f /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance/../busy_loop/.*.o.cmd;
+Removing derived objects...
+make[2]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance'
+make[2]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance'
+Creating output directory
+make[2]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/performance'
+make[1]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code'
+make[1]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code'
+test -d /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/build || mkdir /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/build;
+
+Building func_user
+make[2]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional'
+test -d /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/build || mkdir /home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/build;
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_dp_sample'
+rm -vf *.o dc_dp_sample
+removed 'dc_dp_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_dp_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_dp_sample'
+rm -vf *.o dc_dp_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dc_dp_sample.c cpa_dc_dp_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -L/usr/Lib -lpthread -lcrypto -o dc_dp_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_dp_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_sample'
+rm -vf *.o dc_stateless_sample
+removed 'dc_stateless_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_sample'
+rm -vf *.o dc_stateless_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dc_stateless_sample.c cpa_dc_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o dc_stateless_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateful_sample'
+rm -vf *.o dc_stateful_sample
+removed 'dc_stateful_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateful_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateful_sample'
+rm -vf *.o dc_stateful_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dc_stateful_sample.c cpa_dc_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o dc_stateful_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateful_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_multi_op_checksum_sample'
+rm -vf *.o dc_stateless_multi_op_sample
+removed 'dc_stateless_multi_op_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_multi_op_checksum_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_multi_op_checksum_sample'
+rm -vf *.o dc_stateless_multi_op_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dc_stateless_multi_op_checksum_sample.c ../stateless_sample/cpa_dc_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o dc_stateless_multi_op_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/stateless_multi_op_checksum_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_sample_event_notif'
+rm -vf *.o dc_sample_event_notif
+removed 'dc_sample_event_notif'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_sample_event_notif'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_sample_event_notif'
+rm -vf *.o dc_sample_event_notif
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dc_notif_sample.c cpa_dc_notif_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -L/usr/Lib -lpthread -lcrypto -o dc_sample_event_notif
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/dc_sample_event_notif'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/chaining_sample'
+rm -vf *.o chaining_sample
+removed 'chaining_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/chaining_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/chaining_sample'
+rm -vf *.o chaining_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_chaining_sample.c cpa_chaining_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -lz -o chaining_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/dc/chaining_sample'
+
+Build dc component
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/alg_chaining_sample'
+rm -vf *.o algchaining_sample
+removed 'algchaining_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/alg_chaining_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/alg_chaining_sample'
+rm -vf *.o algchaining_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_algchaining_sample.c cpa_algchaining_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o algchaining_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/alg_chaining_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ccm_sample'
+rm -vf *.o ccm_sample
+removed 'ccm_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ccm_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ccm_sample'
+rm -vf *.o ccm_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_ccm_sample.c cpa_ccm_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o ccm_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ccm_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/cipher_sample'
+rm -vf *.o cipher_sample
+removed 'cipher_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/cipher_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/cipher_sample'
+rm -vf *.o cipher_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_cipher_sample.c cpa_cipher_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o cipher_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/cipher_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/gcm_sample'
+rm -vf *.o gcm_sample
+removed 'gcm_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/gcm_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/gcm_sample'
+rm -vf *.o gcm_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_gcm_sample.c cpa_gcm_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o gcm_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/gcm_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_file_sample'
+rm -vf *.o hash_file_sample
+removed 'hash_file_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_file_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_file_sample'
+rm -vf *.o hash_file_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_hash_file_sample.c cpa_hash_file_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o hash_file_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_file_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_sample'
+rm -vf *.o hash_sample
+removed 'hash_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_sample'
+rm -vf *.o hash_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_hash_sample.c cpa_hash_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o hash_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hash_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ipsec_sample'
+rm -vf *.o ipsec_sample
+removed 'ipsec_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ipsec_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ipsec_sample'
+rm -vf *.o ipsec_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_ipsec_sample.c cpa_ipsec_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o ipsec_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ipsec_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ssl_sample'
+rm -vf *.o ssl_sample
+removed 'ssl_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ssl_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ssl_sample'
+rm -vf *.o ssl_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_ssl_sample.c cpa_ssl_sample_user.c cpa_sample_decrypt_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o ssl_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/ssl_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/symdp_sample'
+rm -vf *.o sym_dp_sample
+removed 'sym_dp_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/symdp_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/symdp_sample'
+rm -vf *.o sym_dp_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_sym_dp_sample.c cpa_sym_dp_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o sym_dp_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/symdp_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hkdf_sample'
+rm -vf *.o hkdf_sample
+removed 'hkdf_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hkdf_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hkdf_sample'
+rm -vf *.o hkdf_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_hkdf_sample.c cpa_hkdf_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o hkdf_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/hkdf_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/update_sample'
+rm -vf *.o sym_dp_update_sample
+removed 'sym_dp_update_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/update_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/update_sample'
+rm -vf *.o sym_dp_update_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_sym_dp_update_sample.c cpa_sym_dp_update_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o sym_dp_update_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/sym/update_sample'
+
+Build sym component algchaining_sample ccm_sample cipher_sample gcm_sample hash_file_sample hash_sample ipsec_sample ssl_sample sym_dp_sample  hkdf_sample update_sample
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/diffie_hellman_sample'
+rm -vf *.o dh_sample
+removed 'dh_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/diffie_hellman_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/diffie_hellman_sample'
+rm -vf *.o dh_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_dh_sample.c cpa_dh_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o dh_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/diffie_hellman_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/prime_sample'
+rm -vf *.o prime_sample
+removed 'prime_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/prime_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/prime_sample'
+rm -vf *.o prime_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_prime_sample.c cpa_prime_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o prime_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/prime_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/rsa_sample'
+rm -vf *.o rsa_sample
+removed 'rsa_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/rsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/rsa_sample'
+rm -vf *.o rsa_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/rsa_sample/../  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_rsa_sample.c cpa_rsa_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o rsa_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/rsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_rsa_sample'
+rm -vf *.o kpt_rsa_sample
+removed 'kpt_rsa_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_rsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_rsa_sample'
+rm -vf *.o kpt_rsa_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_rsa_sample/../  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../../common/cpa_sample_utils.c kpt_rsa_sample_op.c kpt_rsa_sample_main.c ../kpt_sample_common.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o kpt_rsa_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_rsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_ecdsa_sample'
+rm -vf *.o kpt_ecdsa_sample
+removed 'kpt_ecdsa_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_ecdsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_ecdsa_sample'
+rm -vf *.o kpt_ecdsa_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_ecdsa_sample/../  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../../common/cpa_sample_utils.c kpt_ecdsa_sample_op.c kpt_ecdsa_sample_main.c ../kpt_sample_common.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o kpt_ecdsa_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/kpt/kpt_ecdsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/ec_montedwds_sample'
+rm -vf *.o ec_montedwds_sample
+removed 'ec_montedwds_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/ec_montedwds_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/ec_montedwds_sample'
+rm -vf *.o ec_montedwds_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_ec_montedwds_sample.c cpa_ec_montedwds_sample_user.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o ec_montedwds_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/ec_montedwds_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/eddsa_sample'
+rm -vf *.o eddsa_sample
+removed 'eddsa_sample'
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/eddsa_sample'
+make[3]: Entering directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/eddsa_sample'
+rm -vf *.o eddsa_sample
+cc -Wall -O1 -I/home/qirongx2/QAT_driver_new/quickassist/utilities/libusdm_drv// -I/home/qirongx2/QAT_driver_new/quickassist/include/ -I/home/qirongx2/QAT_driver_new/quickassist/include/lac -I/home/qirongx2/QAT_driver_new/quickassist/include/dc -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/include -I/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/include -I/home/qirongx2/QAT_driver_new/quickassist/utilities/osal/include -I/home/qirongx2/QAT_driver_new/quickassist/utilities/osal//src/linux/user_space/include/  -DUSER_SPACE -DDO_CRYPTO -DSC_ENABLE_DYNAMIC_COMPRESSION \
+../../common/cpa_sample_utils.c cpa_eddsa_sample.c cpa_eddsa_sample_user.c cpa_big_num.c cpa_ed_point_operations.c -L/usr/Lib -L/home/qirongx2/QAT_driver_new/build /home/qirongx2/QAT_driver_new/build/libqat_s.so /home/qirongx2/QAT_driver_new/build/libusdm_drv_s.so -ludev -lpthread -lcrypto -lz -o eddsa_sample
+make[3]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional/asym/eddsa_sample'
+
+Build asym component
+make[2]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code/functional'
+make[1]: Leaving directory '/home/qirongx2/QAT_driver_new/quickassist/lookaside/access_layer/src/sample_code'
+
+*******************************************************
+* cpa_sample_code installed under /usr/local/bin directory *
+*******************************************************
+
