@@ -75,7 +75,6 @@ typedef struct {
     // CpaStatus *status;
 } qat_arg_t;
 
-pthread_mutex_t dc_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
 *****************************************************************************
@@ -129,8 +128,7 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     // CpaBufferList *pBufferListDst2 = NULL;
     CpaFlatBuffer *pFlatBuffer = NULL;
     CpaDcOpData opData = {};
-    // Cpa32U bufferSize = sizeof(sampleData);
-    Cpa32U bufferSize = 512; // todo: replace the hardcoding if reading from file
+    Cpa32U bufferSize = sizeof(sampleData);
     Cpa32U dstBufferSize = bufferSize;
     Cpa32U checksum = 0;
     Cpa32U numBuffers = 1; /* only using 1 buffer in this case */
@@ -219,10 +217,7 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     if (CPA_STATUS_SUCCESS == status)
     {
         /* copy source into buffer */
-        // memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
-        // pthread_mutex_lock(&dc_mutex);
-        memcpy(pSrcBuffer, sampleData, 512);
-        // pthread_mutex_unlock(&dc_mutex);
+        memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
 
         /* Build source bufferList */
         pFlatBuffer = (CpaFlatBuffer *)(pBufferListSrc + 1);
@@ -611,11 +606,6 @@ CpaStatus dcStatelessSample(void)
     PRINT_DBG("cpaDcQueryCapabilities\n");
     //<snippet name="queryStart">
     
-    // status = cpaDcQueryCapabilities(dcInstHandles[0], &cap);
-    // if (status != CPA_STATUS_SUCCESS)
-    // {
-    //     return status;
-    // }
 
     /*--------------------------------------------------------------------*/
     pthread_t threads[numInstances];
