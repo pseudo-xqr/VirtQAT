@@ -5,6 +5,10 @@
  * will compress the data using deflate with dynamic huffman trees.
  */
 
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "cpa.h"
 #include "cpa_dc.h"
 
@@ -13,9 +17,10 @@
 extern int gDebugParam;
 
 #define SAMPLE_MAX_BUFF 1024
+#define SAMPLE_SIZE 512
 #define TIMEOUT_MS 5000 /* 5 seconds */
 #define SINGLE_INTER_BUFFLIST 1
-#define MAX_INSTANCES 32
+#define MAX_INSTANCES 3
 
 static Cpa8U sampleData[] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
@@ -62,6 +67,14 @@ static Cpa8U sampleData[] = {
     0x09, 0xEF, 0xEF, 0xEF, 0x34, 0x53, 0x84, 0x68, 0x76, 0x34, 0x65, 0x36,
     0x45, 0x64, 0xab, 0xd5, 0x27, 0x4A, 0xCB, 0xBB
 };
+
+typedef struct {
+    CpaInstanceHandle *dcInstHandle;
+    int index;
+    // CpaStatus *status;
+} qat_arg_t;
+
+pthread_mutex_t dc_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
 *****************************************************************************
@@ -115,7 +128,8 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     CpaBufferList *pBufferListDst2 = NULL;
     CpaFlatBuffer *pFlatBuffer = NULL;
     CpaDcOpData opData = {};
-    Cpa32U bufferSize = sizeof(sampleData);
+    // Cpa32U bufferSize = sizeof(sampleData);
+    Cpa32U bufferSize = 512;
     Cpa32U dstBufferSize = bufferSize;
     Cpa32U checksum = 0;
     Cpa32U numBuffers = 1; /* only using 1 buffer in this case */
@@ -207,7 +221,10 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     if (CPA_STATUS_SUCCESS == status)
     {
         /* copy source into buffer */
-        memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
+        // memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
+        pthread_mutex_lock(&dc_mutex);
+        memcpy(pSrcBuffer, sampleData, 512);
+        pthread_mutex_unlock(&dc_mutex);
 
         /* Build source bufferList */
         pFlatBuffer = (CpaFlatBuffer *)(pBufferListSrc + 1);
@@ -290,122 +307,6 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
             checksum = dcResults.checksum;
         }
     }
-    /*
-    * We now ensure we can decompress to the original buffer.
-    */
-    if (CPA_STATUS_SUCCESS == status)
-    {
-        /* Dst is now the Src buffer - update the length with amount of
-        compressed data added to the buffer */
-        pBufferListDst->pBuffers->dataLenInBytes = dcResults.produced;
-
-        /* Allocate memory for new destination bufferList Dst2, we can use
-        * stateless decompression here because in this scenario we know
-        * that all transmitted data before compress was less than some
-        * max size */
-        if (CPA_STATUS_SUCCESS == status)
-        {
-            status = PHYS_CONTIG_ALLOC(&pBufferMetaDst2, bufferMetaSize);
-        }
-        if (CPA_STATUS_SUCCESS == status)
-        {
-            status = OS_MALLOC(&pBufferListDst2, bufferListMemSize);
-        }
-        if (CPA_STATUS_SUCCESS == status)
-        {
-            status = PHYS_CONTIG_ALLOC(&pDst2Buffer, SAMPLE_MAX_BUFF);
-        }
-
-        if (CPA_STATUS_SUCCESS == status)
-        {
-            /* Build destination 2 bufferList */
-            pFlatBuffer = (CpaFlatBuffer *)(pBufferListDst2 + 1);
-
-            pBufferListDst2->pBuffers = pFlatBuffer;
-            pBufferListDst2->numBuffers = 1;
-            pBufferListDst2->pPrivateMetaData = pBufferMetaDst2;
-
-            pFlatBuffer->dataLenInBytes = SAMPLE_MAX_BUFF;
-            pFlatBuffer->pData = pDst2Buffer;
-
-            PRINT_DBG("cpaDcDecompressData2\n");
-
-            //<snippet name="perfOpDecomp">
-            status = cpaDcDecompressData2(
-                dcInstHandle,
-                sessionHdl,
-                pBufferListDst,  /* source buffer list */
-                pBufferListDst2, /* destination buffer list */
-                &opData,
-                &dcResults, /* results structure */
-                (void
-                    *)&complete); /* data sent as is to the callback function*/
-                                //</snippet>
-
-            if (CPA_STATUS_SUCCESS != status)
-            {
-                PRINT_ERR("cpaDcDecompressData2 failed. (status = %d)\n",
-                        status);
-            }
-
-            /*
-            * We now wait until the completion of the operation.  This uses a
-            * macro
-            * which can be defined differently for different OSes.
-            */
-            if (CPA_STATUS_SUCCESS == status)
-            {
-                if (!COMPLETION_WAIT(&complete, TIMEOUT_MS))
-                {
-                    PRINT_ERR(
-                        "timeout or interruption in cpaDcDecompressData2\n");
-                    status = CPA_STATUS_FAIL;
-                }
-            }
-
-            /*
-            * We now check the results
-            */
-            if (CPA_STATUS_SUCCESS == status)
-            {
-                if (dcResults.status != CPA_DC_OK)
-                {
-                    PRINT_ERR(
-                        "Results status not as expected decomp (status = %d)\n",
-                        dcResults.status);
-                    status = CPA_STATUS_FAIL;
-                }
-                else
-                {
-                    PRINT_DBG("Data consumed %d\n", dcResults.consumed);
-                    PRINT_DBG("Data produced %d\n", dcResults.produced);
-                    PRINT_DBG("Adler checksum 0x%x\n", dcResults.checksum);
-                }
-
-                /* Compare with original Src buffer */
-                if (0 == memcmp(pDst2Buffer, pSrcBuffer, sizeof(sampleData)))
-                {
-                    PRINT_DBG("Output matches expected output\n");
-                }
-                else
-                {
-                    PRINT_ERR("Output does not match expected output\n");
-                    status = CPA_STATUS_FAIL;
-                }
-                if (checksum == dcResults.checksum)
-                {
-                    PRINT_DBG("Checksums match after compression and "
-                            "decompression\n");
-                }
-                else
-                {
-                    PRINT_ERR("Checksums does not match after compression and "
-                            "decompression\n");
-                    status = CPA_STATUS_FAIL;
-                }
-            }
-        }
-    }
 
     /*
     * At this stage, the callback function has returned, so it is
@@ -418,17 +319,20 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     PHYS_CONTIG_FREE(pDstBuffer);
     OS_FREE(pBufferListDst);
     PHYS_CONTIG_FREE(pBufferMetaDst);
-    PHYS_CONTIG_FREE(pDst2Buffer);
-    OS_FREE(pBufferListDst2);
-    PHYS_CONTIG_FREE(pBufferMetaDst2);
+    // PHYS_CONTIG_FREE(pDst2Buffer);
+    // OS_FREE(pBufferListDst2);
+    // PHYS_CONTIG_FREE(pBufferMetaDst2);
 
     COMPLETION_DESTROY(&complete);
     return status;
 }
 
-CpaStatus enqueueQATWork(
-    CpaInstanceHandle* dcInstHandle
-) {
+// CpaStatus enqueueQATWork(
+//     CpaInstanceHandle* dcInstHandle
+// ) {
+void *enqueueQATWork(void* arg) {
+    qat_arg_t* qat_arg = (qat_arg_t*)arg;
+
     CpaStatus status = CPA_STATUS_SUCCESS;
     CpaDcInstanceCapabilities cap = {0};
     CpaBufferList **bufferInterArray = NULL;
@@ -445,10 +349,11 @@ CpaStatus enqueueQATWork(
     /* Query Capabilities */
     PRINT_DBG("cpaDcQueryCapabilities\n");
     //<snippet name="queryStart">
-    status = cpaDcQueryCapabilities(*dcInstHandle, &cap);
+    status = cpaDcQueryCapabilities(*(qat_arg->dcInstHandle), &cap);
     if (status != CPA_STATUS_SUCCESS)
     {
-        return status;
+        // return status;
+        return NULL;
     }
 
     if (!cap.statelessDeflateCompression ||
@@ -456,16 +361,17 @@ CpaStatus enqueueQATWork(
         !cap.dynamicHuffman)
     {
         PRINT_DBG("Error: Unsupported functionality\n");
-        return CPA_STATUS_FAIL;
+        // return CPA_STATUS_FAIL;
+        return NULL;
     }
 
     if (cap.dynamicHuffmanBufferReq)
     {        
-        status = cpaDcBufferListGetMetaSize(*dcInstHandle, 1, &buffMetaSize);
+        status = cpaDcBufferListGetMetaSize(*(qat_arg->dcInstHandle), 1, &buffMetaSize);
 
         if (CPA_STATUS_SUCCESS == status)
         {
-            status = cpaDcGetNumIntermediateBuffers(*dcInstHandle,
+            status = cpaDcGetNumIntermediateBuffers(*(qat_arg->dcInstHandle),
                                                     &numInterBuffLists);
         }
         if (CPA_STATUS_SUCCESS == status && 0 != numInterBuffLists)
@@ -512,7 +418,7 @@ CpaStatus enqueueQATWork(
         /*
         * Set the address translation function for the instance
         */
-        status = cpaDcSetAddressTranslation(*dcInstHandle, sampleVirtToPhys);
+        status = cpaDcSetAddressTranslation(*(qat_arg->dcInstHandle), sampleVirtToPhys);
     }
 
     if (CPA_STATUS_SUCCESS == status)
@@ -520,7 +426,7 @@ CpaStatus enqueueQATWork(
         /* Start DataCompression component */
         PRINT_DBG("cpaDcStartInstance\n");
         status = cpaDcStartInstance(
-            *dcInstHandle, numInterBuffLists, bufferInterArray);
+            *(qat_arg->dcInstHandle), numInterBuffLists, bufferInterArray);
     }
     //</snippet>
 
@@ -530,7 +436,7 @@ CpaStatus enqueueQATWork(
         * If the instance is polled start the polling thread. Note that
         * how the polling is done is implementation-dependent.
         */
-        sampleDcStartPolling(*dcInstHandle);
+        sampleDcStartPolling(*(qat_arg->dcInstHandle));
         /*
         * We now populate the fields of the session operational data and create
         * the session.  Note that the size required to store a session is
@@ -558,7 +464,7 @@ CpaStatus enqueueQATWork(
 
         /* Determine size of session context to allocate */
         PRINT_DBG("cpaDcGetSessionSize\n");
-        status = cpaDcGetSessionSize(*dcInstHandle, &sd, &sess_size, &ctx_size);
+        status = cpaDcGetSessionSize(*(qat_arg->dcInstHandle), &sd, &sess_size, &ctx_size);
     }
 
     if (CPA_STATUS_SUCCESS == status)
@@ -572,7 +478,7 @@ CpaStatus enqueueQATWork(
     {
         PRINT_DBG("cpaDcInitSession\n");
         status = cpaDcInitSession(
-            *dcInstHandle,
+            *(qat_arg->dcInstHandle),
             sessionHdl, /* session memory */
             &sd,        /* session setup data */
             NULL, /* pContexBuffer not required for stateless operations */
@@ -585,16 +491,16 @@ CpaStatus enqueueQATWork(
         CpaStatus sessionStatus = CPA_STATUS_SUCCESS;
 
         /* Perform Compression operation */
-        status = compPerformOp(*dcInstHandle, sessionHdl, sd.huffType);
+        status = compPerformOp(*(qat_arg->dcInstHandle), sessionHdl, sd.huffType);
 
         /*
         * In a typical usage, the session might be used to compression
         * multiple buffers.  In this example however, we can now
         * tear down the session.
         */
-        PRINT_DBG("cpaDcRemoveSession\n");
+        PRINT_DBG("cpaDcRemoveSession, %d\n", qat_arg->index);
         //<snippet name="removeSession">
-        sessionStatus = cpaDcRemoveSession(*dcInstHandle, sessionHdl);
+        sessionStatus = cpaDcRemoveSession(*(qat_arg->dcInstHandle), sessionHdl);
         //</snippet>
 
         /* Maintain status of remove session only when status of all operations
@@ -614,7 +520,7 @@ CpaStatus enqueueQATWork(
         * available through other mechanisms, e.g. in the /proc
         * virtual filesystem.
         */
-        status = cpaDcGetStats(*dcInstHandle, &dcStats);
+        status = cpaDcGetStats(*(qat_arg->dcInstHandle), &dcStats);
 
         if (CPA_STATUS_SUCCESS != status)
         {
@@ -652,7 +558,8 @@ CpaStatus enqueueQATWork(
         PHYS_CONTIG_FREE(bufferInterArray);
     }
 
-    return status;
+    // return status;
+    return NULL;
 }
 
 
@@ -665,19 +572,8 @@ CpaStatus enqueueQATWork(
 CpaStatus dcStatelessSample(void)
 {
     CpaStatus status = CPA_STATUS_SUCCESS;
-    // CpaDcInstanceCapabilities cap = {0};
-    // CpaBufferList **bufferInterArray = NULL;
-    // Cpa16U numInterBuffLists = 0;
-    // Cpa16U bufferNum = 0;
-    // Cpa32U buffMetaSize = 0;
     Cpa16U numInstances = 0;
-
-    // Cpa32U sess_size = 0;
-    // Cpa32U ctx_size = 0;
-    // CpaDcSessionHandle sessionHdl = NULL;
     CpaInstanceHandle dcInstHandles[MAX_INSTANCES];
-    // CpaDcSessionSetupData sd = {0};
-    // CpaDcStats dcStats = {0};
 
     /*
     * In this simplified version of instance discovery, we discover
@@ -723,15 +619,34 @@ CpaStatus dcStatelessSample(void)
     }
 
     /*--------------------------------------------------------------------*/
+    pthread_t threads[numInstances];
+    qat_arg_t qat_arg[numInstances];
+
     for (int i = 0; i < numInstances; i++)
     {
-        status = enqueueQATWork(&dcInstHandles[i]);
-        if (status != CPA_STATUS_SUCCESS)
+        qat_arg[i].dcInstHandle = &dcInstHandles[i];
+        qat_arg[i].index = i;
+        if (pthread_create(&threads[i], NULL, (void *)enqueueQATWork, (void *)&qat_arg[i]))
         {
-            PRINT_ERR("enqueueQATWork failed. (status = %d)\n", status);
-            return status;
+            perror("pthread_create failed");
+            return CPA_STATUS_FAIL;
         }
     }
+    for (int i = 0; i < numInstances; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+    /*--------------------------------------------------------------------*/
+    // for (int i = 0; i < numInstances; i++)
+    // {
+    //     status = enqueueQATWork(&dcInstHandles[i]);
+    //     if (status != CPA_STATUS_SUCCESS)
+    //     {
+    //         PRINT_ERR("enqueueQATWork failed. (status = %d)\n", status);
+    //         return status;
+    //     }
+    // }
+    /*--------------------------------------------------------------------*/
 
     PRINT_DBG("cpaDcStopInstance\n");
     for (int i = 0; i < numInstances; i++)
@@ -743,7 +658,6 @@ CpaStatus dcStatelessSample(void)
             return status;
         }
     }
-
 
     if (CPA_STATUS_SUCCESS == status)
     {
