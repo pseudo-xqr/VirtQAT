@@ -21,7 +21,7 @@ extern int gDebugParam;
 #define SAMPLE_SIZE 512
 #define TIMEOUT_MS 5000 /* 5 seconds */
 #define SINGLE_INTER_BUFFLIST 1
-#define MAX_INSTANCES 4
+#define MAX_INSTANCES 32
 
 static Cpa8U sampleData[] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
@@ -220,9 +220,9 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     {
         /* copy source into buffer */
         // memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
-        pthread_mutex_lock(&dc_mutex);
+        // pthread_mutex_lock(&dc_mutex);
         memcpy(pSrcBuffer, sampleData, 512);
-        pthread_mutex_unlock(&dc_mutex);
+        // pthread_mutex_unlock(&dc_mutex);
 
         /* Build source bufferList */
         pFlatBuffer = (CpaFlatBuffer *)(pBufferListSrc + 1);
@@ -427,6 +427,7 @@ void *enqueueQATWork(void* arg) {
         * how the polling is done is implementation-dependent.
         */
         sampleDcStartPolling(*(qat_arg->dcInstHandle));
+
         /*
         * We now populate the fields of the session operational data and create
         * the session.  Note that the size required to store a session is
@@ -530,7 +531,7 @@ void *enqueueQATWork(void* arg) {
     */
 
     /* Stop the polling thread */
-    sampleDcStopPolling();
+    // sampleDcStopPolling();
 
     /* Free session Context */
     PHYS_CONTIG_FREE(sessionHdl);
@@ -634,6 +635,8 @@ CpaStatus dcStatelessSample(void)
     {
         pthread_join(threads[i], NULL);
     }
+    sampleDcStopPolling();
+
     /*--------------------------------------------------------------------*/
     // for (int i = 0; i < numInstances; i++)
     // {
