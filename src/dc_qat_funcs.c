@@ -6,6 +6,7 @@
  */
 
 #include <pthread.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,7 +21,7 @@ extern int gDebugParam;
 #define SAMPLE_SIZE 512
 #define TIMEOUT_MS 5000 /* 5 seconds */
 #define SINGLE_INTER_BUFFLIST 1
-#define MAX_INSTANCES 3
+#define MAX_INSTANCES 4
 
 static Cpa8U sampleData[] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
@@ -121,15 +122,15 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     CpaStatus status = CPA_STATUS_SUCCESS;
     Cpa8U *pBufferMetaSrc = NULL;
     Cpa8U *pBufferMetaDst = NULL;
-    Cpa8U *pBufferMetaDst2 = NULL;
+    // Cpa8U *pBufferMetaDst2 = NULL;
     Cpa32U bufferMetaSize = 0;
     CpaBufferList *pBufferListSrc = NULL;
     CpaBufferList *pBufferListDst = NULL;
-    CpaBufferList *pBufferListDst2 = NULL;
+    // CpaBufferList *pBufferListDst2 = NULL;
     CpaFlatBuffer *pFlatBuffer = NULL;
     CpaDcOpData opData = {};
     // Cpa32U bufferSize = sizeof(sampleData);
-    Cpa32U bufferSize = 512;
+    Cpa32U bufferSize = 512; // todo: replace the hardcoding if reading from file
     Cpa32U dstBufferSize = bufferSize;
     Cpa32U checksum = 0;
     Cpa32U numBuffers = 1; /* only using 1 buffer in this case */
@@ -139,7 +140,7 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
         sizeof(CpaBufferList) + (numBuffers * sizeof(CpaFlatBuffer));
     Cpa8U *pSrcBuffer = NULL;
     Cpa8U *pDstBuffer = NULL;
-    Cpa8U *pDst2Buffer = NULL;
+    // Cpa8U *pDst2Buffer = NULL;
     /* The following variables are allocated on the stack because we block
     * until the callback comes back. If a non-blocking approach was to be
     * used then these variables should be dynamically allocated */
@@ -147,8 +148,6 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     struct COMPLETION_STRUCT complete = { 0 };
     CpaInstanceInfo2 info = {0};
     INIT_OPDATA(&opData, CPA_DC_FLUSH_FINAL);
-
-    PRINT_DBG("cpaDcBufferListGetMetaSize\n");
 
     /*
     * Get device info from dcInstHandle
@@ -170,8 +169,7 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     * meta data, the buffer list, and for the buffer itself.
     */
     //<snippet name="memAlloc">
-    status =
-        cpaDcBufferListGetMetaSize(dcInstHandle, numBuffers, &bufferMetaSize);
+    status = cpaDcBufferListGetMetaSize(dcInstHandle, numBuffers, &bufferMetaSize);
 
     /* Destination buffer size is set as sizeof(sampelData) for a
     * Deflate compression operation with DC_API_VERSION < 2.5.
@@ -333,6 +331,7 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
 void *enqueueQATWork(void* arg) {
     qat_arg_t* qat_arg = (qat_arg_t*)arg;
 
+
     CpaStatus status = CPA_STATUS_SUCCESS;
     CpaDcInstanceCapabilities cap = {0};
     CpaBufferList **bufferInterArray = NULL;
@@ -347,21 +346,12 @@ void *enqueueQATWork(void* arg) {
     CpaDcStats dcStats = {0};
 
     /* Query Capabilities */
-    PRINT_DBG("cpaDcQueryCapabilities\n");
-    //<snippet name="queryStart">
+    // PRINT_DBG("cpaDcQueryCapabilities\n");
+    // //<snippet name="queryStart">
     status = cpaDcQueryCapabilities(*(qat_arg->dcInstHandle), &cap);
     if (status != CPA_STATUS_SUCCESS)
     {
         // return status;
-        return NULL;
-    }
-
-    if (!cap.statelessDeflateCompression ||
-        !cap.statelessDeflateDecompression || !cap.checksumAdler32 ||
-        !cap.dynamicHuffman)
-    {
-        PRINT_DBG("Error: Unsupported functionality\n");
-        // return CPA_STATUS_FAIL;
         return NULL;
     }
 
@@ -617,6 +607,14 @@ CpaStatus dcStatelessSample(void)
             (Cpa8U)((info[i].physInstId.busAddress) & 0xFF) >> 3, 
             (Cpa8U)((info[i].physInstId.busAddress) & 7));
     }
+    PRINT_DBG("cpaDcQueryCapabilities\n");
+    //<snippet name="queryStart">
+    
+    // status = cpaDcQueryCapabilities(dcInstHandles[0], &cap);
+    // if (status != CPA_STATUS_SUCCESS)
+    // {
+    //     return status;
+    // }
 
     /*--------------------------------------------------------------------*/
     pthread_t threads[numInstances];

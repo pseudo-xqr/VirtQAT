@@ -3,7 +3,7 @@
  * @file  dc_sample_main.c
  *
  *****************************************************************************/
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include "cpa_sample_utils.h"
@@ -17,11 +17,11 @@ int main(int argc, const char **argv)
 {
     CpaStatus stat = CPA_STATUS_SUCCESS;
     
-    const char* procName = argv[2];
+    // const char* procName = argv[2];
 
     if (argc > 2)
     {
-        gDebugParam = atoi(argv[3]);
+        gDebugParam = atoi(argv[2]);
     }
 
     PRINT_DBG("Starting Stateless Compression Sample Code App ...\n");
@@ -33,7 +33,7 @@ int main(int argc, const char **argv)
         return (int)stat;
     }
 
-    stat = icp_sal_userStartMultiProcess("SSL", CPA_FALSE);
+    stat = icp_sal_userStartMultiProcess("SSL", CPA_TRUE);
     // stat = icp_sal_userStart("SSL");
     if (CPA_STATUS_SUCCESS != stat)
     {
