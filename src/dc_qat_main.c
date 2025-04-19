@@ -24,7 +24,7 @@ int main(int argc, const char **argv)
         gDebugParam = atoi(argv[2]);
     }
 
-    PRINT_DBG("Starting Stateless Compression Sample Code App ...\n");
+    // PRINT_DBG("Starting Stateless Compression Sample Code App ...\n");
 
     stat = qaeMemInit();
     if (CPA_STATUS_SUCCESS != stat)
@@ -45,11 +45,11 @@ int main(int argc, const char **argv)
     stat = dcStatelessSample();
     if (CPA_STATUS_SUCCESS != stat)
     {
-        PRINT_ERR("\nStateless Compression Sample Code App failed\n");
+        PRINT_ERR("Stateless Compression Sample Code App failed\n");
     }
     else
     {
-        PRINT_DBG("\nStateless Compression Sample Code App finished\n");
+        PRINT_DBG("Stateless Compression Sample Code App finished\n");
     }
 
     icp_sal_userStop();

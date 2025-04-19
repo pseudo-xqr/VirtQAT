@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <sched.h>
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
 
 #include "cpa.h"
@@ -17,61 +18,22 @@
 
 extern int gDebugParam;
 
-#define SAMPLE_MAX_BUFF 1024
-#define SAMPLE_SIZE 512
+// #define SAMPLE_MAX_BUFF 1024
+#define SAMPLE_MAX_SIZE_MB 1
+#define SAMPLE_MAX_BUFF SAMPLE_MAX_SIZE_MB * 1024 * 1024
+#define NUM_LINES_PER_FILE 1000
+// #define CHUNK_SIZE_MB 2
+// #define CHUNK_SIZE CHUNK_SIZE_MB * 1024 * 1024  
+// #define SAMPLE_SIZE 512
 #define TIMEOUT_MS 5000 /* 5 seconds */
 #define SINGLE_INTER_BUFFLIST 1
-#define MAX_INSTANCES 32
-
-static Cpa8U sampleData[] = {
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01,
-    0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x09, 0xEF, 0xEF, 0xEF, 0x34, 0x53, 0x84, 0x68, 0x76, 0x34, 0x65, 0x36,
-    0x45, 0x64, 0xab, 0xd5, 0x27, 0x4a, 0xcb, 0xbb, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
-    0x06, 0x07, 0x08, 0x09, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xEF, 0xEF, 0xEF,
-    0x34, 0x53, 0x84, 0x68, 0x76, 0x34, 0x65, 0x36, 0x45, 0x64, 0xab, 0xd5,
-    0x27, 0x4a, 0xcb, 0xbb, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03,
-    0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0x01, 0x02, 0x03, 0x04,
-    0x05, 0x06, 0x07, 0x08, 0x09, 0xEF, 0xEF, 0xEF, 0x34, 0x53, 0x84, 0x68,
-    0x76, 0x34, 0x65, 0x36, 0x45, 0x64, 0xab, 0xd5, 0x27, 0x4a, 0xcb, 0xbb,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD,
-    0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01,
-    0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xDE, 0xAD, 0xEE, 0xEE,
-    0xDE, 0xAD, 0xBB, 0xBF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
-    0xDE, 0xAD, 0xBE, 0xEF, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    0x09, 0xEF, 0xEF, 0xEF, 0x34, 0x53, 0x84, 0x68, 0x76, 0x34, 0x65, 0x36,
-    0x45, 0x64, 0xab, 0xd5, 0x27, 0x4A, 0xCB, 0xBB
-};
+#define MAX_INSTANCES 16
 
 typedef struct {
     CpaInstanceHandle *dcInstHandle;
-    int index;
+    Cpa32U index;
+    Cpa8U *buf_ptr;
+    Cpa32U *interval;
     // CpaStatus *status;
 } qat_arg_t;
 
@@ -101,7 +63,7 @@ CpaStatus dcStatelessSample(void);
 //<snippet name="dcCallback">
 static void dcCallback(void *pCallbackTag, CpaStatus status)
 {
-    PRINT_DBG("Callback called with status = %d.\n", status);
+    // PRINT_DBG("Callback called with status = %d.\n", status);
 
     if (NULL != pCallbackTag)
     {
@@ -114,9 +76,11 @@ static void dcCallback(void *pCallbackTag, CpaStatus status)
 /*
 * This function performs a compression and decompress operation.
 */
-static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
-                            CpaDcSessionHandle sessionHdl,
-                            CpaDcHuffType huffType)
+static CpaStatus compPerformOp(
+    Cpa8U* buf_ptr,
+    CpaInstanceHandle dcInstHandle,
+    CpaDcSessionHandle sessionHdl,
+    CpaDcHuffType huffType)
 {
     CpaStatus status = CPA_STATUS_SUCCESS;
     Cpa8U *pBufferMetaSrc = NULL;
@@ -128,9 +92,10 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     // CpaBufferList *pBufferListDst2 = NULL;
     CpaFlatBuffer *pFlatBuffer = NULL;
     CpaDcOpData opData = {};
-    Cpa32U bufferSize = sizeof(sampleData);
+    // Cpa32U bufferSize = sizeof(sampleData);
+    Cpa32U bufferSize = SAMPLE_MAX_BUFF;
     Cpa32U dstBufferSize = bufferSize;
-    Cpa32U checksum = 0;
+    // Cpa32U checksum = 0;
     Cpa32U numBuffers = 1; /* only using 1 buffer in this case */
     /* allocate memory for bufferlist and array of flat buffers in a contiguous
     * area and carve it up to reduce number of memory allocations required. */
@@ -143,21 +108,11 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     * until the callback comes back. If a non-blocking approach was to be
     * used then these variables should be dynamically allocated */
     CpaDcRqResults dcResults;
-    struct COMPLETION_STRUCT complete = { 0 };
-    CpaInstanceInfo2 info = {0};
+    struct COMPLETION_STRUCT complete1 = { 0 };
+    struct COMPLETION_STRUCT complete2 = { 0 };
+    struct COMPLETION_STRUCT complete3 = { 0 };
+    // CpaInstanceInfo2 info = {0};
     INIT_OPDATA(&opData, CPA_DC_FLUSH_FINAL);
-
-    /*
-    * Get device info from dcInstHandle
-    */
-    status = cpaDcInstanceGetInfo2(dcInstHandle, &info);
-    PRINT_DBG("Dev = %u, Accel = %u, EE = %u, BDF = %02X:%02X:%02X\n", 
-    info.physInstId.packageId, 
-    info.physInstId.acceleratorId, 
-    info.physInstId.executionEngineId, 
-    (Cpa8U)((info.physInstId.busAddress) >> 8), 
-    (Cpa8U)((info.physInstId.busAddress) & 0xFF) >> 3, 
-    (Cpa8U)((info.physInstId.busAddress) & 7));
 
     /*
     * Different implementations of the API require different
@@ -217,7 +172,8 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     if (CPA_STATUS_SUCCESS == status)
     {
         /* copy source into buffer */
-        memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
+        // memcpy(pSrcBuffer, sampleData, sizeof(sampleData));
+        memcpy(pSrcBuffer, buf_ptr, SAMPLE_MAX_BUFF);
 
         /* Build source bufferList */
         pFlatBuffer = (CpaFlatBuffer *)(pBufferListSrc + 1);
@@ -246,10 +202,16 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
         * the
         * operation.
         */
-        PRINT_DBG("cpaDcCompressData2\n");
+        // PRINT_DBG("cpaDcCompressData2\n");
 
         //<snippet name="perfOp">
-        COMPLETION_INIT(&complete);
+        COMPLETION_INIT(&complete1);
+        COMPLETION_INIT(&complete2);
+        COMPLETION_INIT(&complete3);
+
+        struct timespec start, end;
+        long long elapsed_ns;
+        clock_gettime(CLOCK_MONOTONIC, &start);
         
         status = cpaDcCompressData2(
             dcInstHandle,
@@ -258,9 +220,36 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
             pBufferListDst,     /* destination buffer list */
             &opData,            /* Operational data */
             &dcResults,         /* results structure */
-            (void *)&complete); /* data sent as is to the callback function*/
-                                //</snippet>
+            (void *)&complete1); /* data sent as is to the callback function*/
+                                //</snippet>            
+        if (CPA_STATUS_SUCCESS != status)
+        {
+            PRINT_ERR("cpaDcCompressData2 failed. (status = %d)\n", status);
+        }
 
+        status = cpaDcCompressData2(
+            dcInstHandle,
+            sessionHdl,
+            pBufferListSrc,     /* source buffer list */
+            pBufferListDst,     /* destination buffer list */
+            &opData,            /* Operational data */
+            &dcResults,         /* results structure */
+            (void *)&complete2); /* data sent as is to the callback function*/
+                                //</snippet>            
+        if (CPA_STATUS_SUCCESS != status)
+        {
+            PRINT_ERR("cpaDcCompressData2 failed. (status = %d)\n", status);
+        }
+
+        status = cpaDcCompressData2(
+            dcInstHandle,
+            sessionHdl,
+            pBufferListSrc,     /* source buffer list */
+            pBufferListDst,     /* destination buffer list */
+            &opData,            /* Operational data */
+            &dcResults,         /* results structure */
+            (void *)&complete3); /* data sent as is to the callback function*/
+                                //</snippet>            
         if (CPA_STATUS_SUCCESS != status)
         {
             PRINT_ERR("cpaDcCompressData2 failed. (status = %d)\n", status);
@@ -272,12 +261,33 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
         */
         if (CPA_STATUS_SUCCESS == status)
         {
-            if (!COMPLETION_WAIT(&complete, TIMEOUT_MS))
+            if (!COMPLETION_WAIT(&complete1, TIMEOUT_MS))
             {
                 PRINT_ERR("timeout or interruption in cpaDcCompressData2\n");
                 status = CPA_STATUS_FAIL;
             }
         }
+        if (CPA_STATUS_SUCCESS == status)
+        {
+            if (!COMPLETION_WAIT(&complete2, TIMEOUT_MS))
+            {
+                PRINT_ERR("timeout or interruption in cpaDcCompressData2\n");
+                status = CPA_STATUS_FAIL;
+            }
+        }
+        if (CPA_STATUS_SUCCESS == status)
+        {
+            if (!COMPLETION_WAIT(&complete3, TIMEOUT_MS))
+            {
+                PRINT_ERR("timeout or interruption in cpaDcCompressData2\n");
+                status = CPA_STATUS_FAIL;
+            }
+        }
+        
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        elapsed_ns = (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec);
+        PRINT_DBG("Elapsed time = %lld ns\n",elapsed_ns);
+
 
         /*
         * We now check the results
@@ -294,10 +304,10 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
             {
                 PRINT_DBG("Data consumed %d\n", dcResults.consumed);
                 PRINT_DBG("Data produced %d\n", dcResults.produced);
-                PRINT_DBG("Adler checksum 0x%x\n", dcResults.checksum);
+                // PRINT_DBG("Adler checksum 0x%x\n", dcResults.checksum);
             }
             /* To compare the checksum with decompressed output */
-            checksum = dcResults.checksum;
+            // checksum = dcResults.checksum;
         }
     }
 
@@ -316,7 +326,9 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
     // OS_FREE(pBufferListDst2);
     // PHYS_CONTIG_FREE(pBufferMetaDst2);
 
-    COMPLETION_DESTROY(&complete);
+    COMPLETION_DESTROY(&complete1);
+    COMPLETION_DESTROY(&complete2);
+    COMPLETION_DESTROY(&complete3);
     return status;
 }
 
@@ -325,7 +337,6 @@ static CpaStatus compPerformOp(CpaInstanceHandle dcInstHandle,
 // ) {
 void *enqueueQATWork(void* arg) {
     qat_arg_t* qat_arg = (qat_arg_t*)arg;
-
 
     CpaStatus status = CPA_STATUS_SUCCESS;
     CpaDcInstanceCapabilities cap = {0};
@@ -339,11 +350,13 @@ void *enqueueQATWork(void* arg) {
     CpaDcSessionHandle sessionHdl = NULL;
     CpaDcSessionSetupData sd = {0};
     CpaDcStats dcStats = {0};
+    Cpa32U *thread_interval = qat_arg->interval;
+    PRINT_DBG("Thread %d, interval = %d\n", qat_arg->index, thread_interval[1]);
 
     /* Query Capabilities */
     // PRINT_DBG("cpaDcQueryCapabilities\n");
     // //<snippet name="queryStart">
-    status = cpaDcQueryCapabilities(*(qat_arg->dcInstHandle), &cap);
+    status = cpaDcQueryCapabilities(*(qat_arg->dcInstHandle), &cap); // retrieve the capabilities matrix of an instance
     if (status != CPA_STATUS_SUCCESS)
     {
         // return status;
@@ -351,7 +364,7 @@ void *enqueueQATWork(void* arg) {
     }
 
     if (cap.dynamicHuffmanBufferReq)
-    {        
+    { 
         status = cpaDcBufferListGetMetaSize(*(qat_arg->dcInstHandle), 1, &buffMetaSize);
 
         if (CPA_STATUS_SUCCESS == status)
@@ -409,7 +422,7 @@ void *enqueueQATWork(void* arg) {
     if (CPA_STATUS_SUCCESS == status)
     {
         /* Start DataCompression component */
-        PRINT_DBG("cpaDcStartInstance\n");
+        // PRINT_DBG("cpaDcStartInstance\n");
         status = cpaDcStartInstance(
             *(qat_arg->dcInstHandle), numInterBuffLists, bufferInterArray);
     }
@@ -430,7 +443,7 @@ void *enqueueQATWork(void* arg) {
         * much memory to allocate, and then allocate that memory.
         */
         //<snippet name="initSession">
-        sd.compLevel = CPA_DC_L4;
+        sd.compLevel = CPA_DC_L6;
         sd.compType = CPA_DC_DEFLATE;
         sd.huffType = huffmanType_g;
         /* If the implementation supports it, the session will be configured
@@ -449,7 +462,7 @@ void *enqueueQATWork(void* arg) {
         sd.sessState = CPA_DC_STATELESS;
 
         /* Determine size of session context to allocate */
-        PRINT_DBG("cpaDcGetSessionSize\n");
+        // PRINT_DBG("cpaDcGetSessionSize\n");
         status = cpaDcGetSessionSize(*(qat_arg->dcInstHandle), &sd, &sess_size, &ctx_size);
     }
 
@@ -462,7 +475,7 @@ void *enqueueQATWork(void* arg) {
     /* Initialize the Stateless session */
     if (CPA_STATUS_SUCCESS == status)
     {
-        PRINT_DBG("cpaDcInitSession\n");
+        // PRINT_DBG("cpaDcInitSession\n");
         status = cpaDcInitSession(
             *(qat_arg->dcInstHandle),
             sessionHdl, /* session memory */
@@ -477,14 +490,14 @@ void *enqueueQATWork(void* arg) {
         CpaStatus sessionStatus = CPA_STATUS_SUCCESS;
 
         /* Perform Compression operation */
-        status = compPerformOp(*(qat_arg->dcInstHandle), sessionHdl, sd.huffType);
+        status = compPerformOp(qat_arg->buf_ptr, *(qat_arg->dcInstHandle), sessionHdl, sd.huffType);
 
         /*
         * In a typical usage, the session might be used to compression
         * multiple buffers.  In this example however, we can now
         * tear down the session.
         */
-        PRINT_DBG("cpaDcRemoveSession, %d\n", qat_arg->index);
+        // PRINT_DBG("cpaDcRemoveSession, %d\n", qat_arg->index);
         //<snippet name="removeSession">
         sessionStatus = cpaDcRemoveSession(*(qat_arg->dcInstHandle), sessionHdl);
         //</snippet>
@@ -603,18 +616,65 @@ CpaStatus dcStatelessSample(void)
             (Cpa8U)((info[i].physInstId.busAddress) & 0xFF) >> 3, 
             (Cpa8U)((info[i].physInstId.busAddress) & 7));
     }
-    PRINT_DBG("cpaDcQueryCapabilities\n");
+    // PRINT_DBG("cpaDcQueryCapabilities\n");
     //<snippet name="queryStart">
     
-
     /*--------------------------------------------------------------------*/
     pthread_t threads[numInstances];
     qat_arg_t qat_arg[numInstances];
+    char filename[256];
+    Cpa32U trace_time[numInstances][NUM_LINES_PER_FILE];
 
+    /* Read data file */
+    Cpa8U *buffer = malloc(SAMPLE_MAX_BUFF);
+    if (!buffer) {
+        perror("Malloc failed.");
+        return 1;
+    }
+    FILE *fp = fopen("../benchmark/Silesia_all", "rb");
+    if (!fp) {
+        perror("File open failed.");
+        free(buffer);
+        return 1;
+    }
+    size_t bytesRead = fread(buffer, 1, SAMPLE_MAX_BUFF, fp);
+    if (bytesRead != SAMPLE_MAX_BUFF) {
+        perror("File read failed.");
+        free(buffer);
+        fclose(fp);
+        return 1;
+    }
+    fclose(fp);
+
+    /* Read trace file */
+    for (int i = 1; i <= numInstances; i++) {
+        snprintf(filename, sizeof(filename), "../traces/trace_vm%d", i);
+        
+        FILE *fp_trace = fopen(filename, "r");
+        if (fp_trace == NULL) {
+            perror("File open failed");
+            free(buffer);
+            fclose(fp_trace);
+            return 1;
+        }
+        int work_size, interval;
+        int line_index = 0;
+        while (fscanf(fp_trace, "%d %d", &work_size, &interval) == 2) {
+            // printf("Work size: %d, Interval: %d\n", work_size, interval);
+            // trace_time[i-1] = malloc(NUM_LINES_PER_FILE * sizeof(int));
+            trace_time[i-1][line_index] = interval;
+            line_index++;
+        }
+        fclose(fp_trace);
+    }
+    
     for (int i = 0; i < numInstances; i++)
     {
-        qat_arg[i].dcInstHandle = &dcInstHandles[i];
+        qat_arg[i].dcInstHandle = &(dcInstHandles[i]);
         qat_arg[i].index = i;
+        qat_arg[i].buf_ptr = buffer;
+        qat_arg[i].interval = trace_time[i];
+        
         if (pthread_create(&threads[i], NULL, (void *)enqueueQATWork, (void *)&qat_arg[i]))
         {
             perror("pthread_create failed");
@@ -639,7 +699,6 @@ CpaStatus dcStatelessSample(void)
     // }
     /*--------------------------------------------------------------------*/
 
-    PRINT_DBG("cpaDcStopInstance\n");
     for (int i = 0; i < numInstances; i++)
     {
         status = cpaDcStopInstance(dcInstHandles[i]);
@@ -649,6 +708,8 @@ CpaStatus dcStatelessSample(void)
             return status;
         }
     }
+    // Free the allocated buffer
+    free(buffer);
 
     if (CPA_STATUS_SUCCESS == status)
     {
