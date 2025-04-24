@@ -11,17 +11,17 @@
  #include <time.h>
  #include <stdlib.h>
  #include <unistd.h>
+ #include <stdatomic.h>
  
  #include "cpa.h"
  #include "cpa_dc.h"
- 
  #include "cpa_sample_utils.h"
  
  extern int gDebugParam;
  pthread_barrier_t barrier;
  
  // #define SAMPLE_MAX_BUFF 1024
- #define SAMPLE_MAX_SIZE_MB 2
+ #define SAMPLE_MAX_SIZE_MB 1.25
  #define SAMPLE_MAX_BUFF SAMPLE_MAX_SIZE_MB * 1024 * 1024
  #define NUM_LINES_PER_FILE 1000
  // #define CHUNK_SIZE_MB 2
@@ -29,7 +29,9 @@
  // #define SAMPLE_SIZE 512
  #define TIMEOUT_MS 5000 /* 5 seconds */
  #define SINGLE_INTER_BUFFLIST 1
- #define MAX_INSTANCES 16
+ #define MAX_INSTANCES 4
+ #define NUM_COMPL_PER_THREAD 10
+ #define TOTAL_INSTANCES MAX_INSTANCES*NUM_COMPL_PER_THREAD
  
  typedef struct {
      CpaInstanceHandle *dcInstHandle;
@@ -39,6 +41,65 @@
      // CpaStatus *status;
  } qat_arg_t;
  
+ typedef struct {
+     unsigned long tid;
+     struct timespec timestamp;
+ } kv_entry_t;
+ 
+ kv_entry_t start_time_table[TOTAL_INSTANCES];
+ kv_entry_t end_time_table[TOTAL_INSTANCES];
+ 
+ _Atomic Cpa32U start_time_table_idx = 0;
+ _Atomic Cpa32U end_time_table_idx = 0;
+ 
+ /*
+ *****************************************************************************
+ * Functions to operate timeStamp table 
+ *****************************************************************************
+ */
+ Cpa32U startt_table_add_entry(kv_entry_t *table, unsigned long tid, struct timespec timestamp) {
+     Cpa32U cur_idx = atomic_fetch_add(&start_time_table_idx, 1);
+     table[cur_idx].tid = tid;
+     table[cur_idx].timestamp = timestamp;
+     return 0;
+ }
+ 
+ Cpa32U endt_table_add_entry(kv_entry_t *table, unsigned long tid, struct timespec timestamp) {
+     Cpa32U cur_idx = atomic_fetch_add(&end_time_table_idx, 1);
+     table[cur_idx].tid = tid;
+     table[cur_idx].timestamp = timestamp;
+     
+     return 1;
+ }
+ int compare_tid(const void *thr_tid1, const void *thr_tid2) {
+     const kv_entry_t *entry1 = (const kv_entry_t *)thr_tid1;
+     const kv_entry_t *entry2 = (const kv_entry_t *)thr_tid2;
+     unsigned long tid1 = entry1->tid;
+     unsigned long tid2 = entry2->tid;
+     if (tid1 < tid2) {
+         return -1;
+     } else {
+         return 1;
+     }
+     return 0;
+ }
+ int compare_timestamp(const void *thr_time1, const void *thr_time2) {
+     const kv_entry_t *entry1 = (const kv_entry_t *)thr_time1;
+     const kv_entry_t *entry2 = (const kv_entry_t *)thr_time2;
+     struct timespec time1 = entry1->timestamp;
+     struct timespec time2 = entry2->timestamp;
+     if (time1.tv_nsec < time2.tv_nsec) {
+         return -1;
+     } else {
+         return 1;
+     }
+     return 0;
+ }
+ void print_time_table(kv_entry_t *table, Cpa32U size) {
+     for (Cpa32U i = 0; i < size; i++) {
+         PRINT_DBG("Thread ID: %lu, Timestamp: %ld.%09ld\n", table[i].tid, table[i].timestamp.tv_sec, table[i].timestamp.tv_nsec);
+     }
+ } 
  
  /*
  *****************************************************************************
@@ -65,7 +126,12 @@
  //<snippet name="dcCallback">
  static void dcCallback(void *pCallbackTag, CpaStatus status)
  {
-     // PRINT_DBG("Callback called with status = %d.\n", status);
+     // PRINT_DBG("Callback called with status = %d, tid = %lu\n", status, (unsigned long)pthread_self());
+     struct timespec ts;
+     clock_gettime(CLOCK_REALTIME, &ts);  // Use CLOCK_MONOTONIC for uptime
+     // printf("Timestamp: %ld.%09ld seconds\n", ts.tv_sec, ts.tv_nsec);
+     // Assume the response comes back in submission order
+     endt_table_add_entry(end_time_table, (unsigned long)pthread_self(), ts);
  
      if (NULL != pCallbackTag)
      {
@@ -111,12 +177,8 @@
      * until the callback comes back. If a non-blocking approach was to be
      * used then these variables should be dynamically allocated */
      CpaDcRqResults dcResults;
-     // struct COMPLETION_STRUCT complete1 = { 0 };
-     // struct COMPLETION_STRUCT complete2 = { 0 };
-     // struct COMPLETION_STRUCT complete3 = { 0 };
-     Cpa32U compl_arr_size = 1000;
+     Cpa32U compl_arr_size = NUM_COMPL_PER_THREAD;
      struct COMPLETION_STRUCT complete_array[compl_arr_size];
-     // CpaInstanceInfo2 info = {0};
      INIT_OPDATA(&opData, CPA_DC_FLUSH_FINAL);
  
      /*
@@ -219,10 +281,13 @@
          struct timespec start, end;
          long long elapsed_ns;
          pthread_barrier_wait(&barrier); // Put a barrier here to synchronize threads before benchmarking
+         struct timespec ts;
          clock_gettime(CLOCK_MONOTONIC, &start);
          
          for (Cpa32U i = 0; i < compl_arr_size; i++)
          {
+             clock_gettime(CLOCK_REALTIME, &ts);
+             startt_table_add_entry(start_time_table, (unsigned long)pthread_self(), ts);
              status = cpaDcCompressData2(
                  dcInstHandle,
                  sessionHdl,
@@ -255,8 +320,6 @@
                  }
              }
          }
-             
-         
          clock_gettime(CLOCK_MONOTONIC, &end);
          elapsed_ns = (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec);
          PRINT_DBG("Elapsed time = %lld ns\n",elapsed_ns);
@@ -296,13 +359,7 @@
      PHYS_CONTIG_FREE(pDstBuffer);
      OS_FREE(pBufferListDst);
      PHYS_CONTIG_FREE(pBufferMetaDst);
-     // PHYS_CONTIG_FREE(pDst2Buffer);
-     // OS_FREE(pBufferListDst2);
-     // PHYS_CONTIG_FREE(pBufferMetaDst2);
  
-     // COMPLETION_DESTROY(&complete1);
-     // COMPLETION_DESTROY(&complete2);
-     // COMPLETION_DESTROY(&complete3);
      for (Cpa32U i = 0; i < compl_arr_size; i++)
      {
          COMPLETION_DESTROY(&complete_array[i]);
@@ -687,6 +744,16 @@
              return status;
          }
      }
+     /*--------------------------------------------------------------------*/
+     /* Sort the timestamp KV store                                        */
+     /*--------------------------------------------------------------------*/
+     qsort(start_time_table, start_time_table_idx, sizeof(kv_entry_t), compare_tid);
+     qsort(end_time_table, end_time_table_idx, sizeof(kv_entry_t), compare_tid);
+     // PRINT_DBG("Start time table:\n");
+     // print_time_table(start_time_table, start_time_table_idx);
+     // PRINT_DBG("End time table:\n");
+     // print_time_table(end_time_table, end_time_table_idx);
+     
      // Free the allocated buffer
      free(buffer);
  
