@@ -22,8 +22,13 @@
 # done
 
 ### Attach vdevs
+# for i in {0..15}; do
+#     virsh attach-device g$i ./guest_vdev/guest$i.xml --config
+# done
+
+### Ping CPU cores to VM
 for i in {0..15}; do
-    virsh attach-device g$i /guest_vdev/guest$i.xml --config
+    virsh vcpupin g$i 0 $i
 done
 
 ### Stop all VMs

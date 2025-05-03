@@ -303,15 +303,15 @@ static CpaStatus compPerformOp(
         struct timespec ts;
 
 
-        // Wait for keyboard interrupt to start
-        PRINT_DBG("Press 'c' to start the compression operation...\n");
-        char ch;
-        while ((ch = getchar()) != 'c') {
-            // Clear the input buffer in case of extra characters or newline
-            while (getchar() != '\n'); // flush until newline
-            PRINT_ERR("Invalid input. Press 'c' to continue...\n");
-        }
-        PRINT_DBG("Received 'c'.");
+        // // Wait for keyboard interrupt to start
+        // PRINT_DBG("Press 'c' to start the compression operation...\n");
+        // char ch;
+        // while ((ch = getchar()) != 'c') {
+        //     // Clear the input buffer in case of extra characters or newline
+        //     while (getchar() != '\n'); // flush until newline
+        //     PRINT_ERR("Invalid input. Press 'c' to continue...\n");
+        // }
+        // PRINT_DBG("Received 'c'.");
 
         clock_gettime(CLOCK_MONOTONIC, &start);
         

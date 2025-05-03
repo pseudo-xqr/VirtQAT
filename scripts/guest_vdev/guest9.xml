@@ -1,5 +1,5 @@
 <hostdev mode='subsystem' type='mdev' model='vfio-pci'>
   <source>
-    <address uuid='8ed1d94a-4f79-4246-b0ba-f65a5f8bd233'/>
+    <address uuid='92493405-99e3-40b1-a425-36d325450c63'/>
   </source>
 </hostdev>

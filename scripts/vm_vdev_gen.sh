@@ -1,5 +1,13 @@
 #!/bin/bash
 
+sudo cp ./4xxx_dev0.conf /etc/4xxx_dev0.conf
+sudo cp ./4xxx_dev0.conf /etc/4xxx_dev1.conf
+sudo systemctl restart qat.service
+
+for i in {0..15}; do
+    sudo ../QAT_driver/build/vqat_ctl create 0000:6b:00.0 dc
+done
+
 for i in {0..15}; do
     > ./guest_vdev/guest$i.xml
 done
@@ -14,7 +22,7 @@ virsh nodedev-list --cap mdev | while read -r line; do
         id4="${BASH_REMATCH[4]}"
         id5="${BASH_REMATCH[5]}"
         uuid="${id1}-${id2}-${id3}-${id4}-${id5}"
-        echo "UUID is ${uuid}, index is "
+        echo "UUID is ${uuid}"
 
         echo "<hostdev mode='subsystem' type='mdev' model='vfio-pci'>" >> ./guest_vdev/guest$index.xml
         echo "  <source>" >> ./guest_vdev/guest$index.xml
